@@ -19,7 +19,7 @@ const router = new VueRouter({
         path: '/*',
         redirect: '/movie'
     }
-  ]
+  ],
 })
 
 export default router

@@ -1,0 +1,24 @@
+// 省略...效果
+@mixin ellipsis($extend: true) {
+    @if $extend {
+        @extend %ellipsis;
+    }
+    @else {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+
+%ellipsis {
+    @include ellipsis(false);
+}
+
+// 根据行数添加...效果
+@mixin ellipsis-lines($lines: 2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+}
