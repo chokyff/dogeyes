@@ -1,23 +1,25 @@
 <template>
     <div class="cinema_body">
-        <ul>
-            <li v-for="item in cinemaList" :key="item.id">
-                <div>
-                    <span>{{ item.nm }}</span>
-                    <span class="q"><span class="price">{{ item.sellPrice == '' ? 38 : item.sellPrice }}</span> 元起</span>
-                </div>
-                <div>影厅类型:{{ item.tag.hallType=='' ? '2D' : item.tag.hallType }}</div>
-                <div class="address">
-                    <span class="cityAddr">{{ item.addr }}</span>
-                    <span>{{ item.distance }}</span>
-                </div>
-                <div class="card">
-                    <div v-for="(num,key) in item.tag" 
-                    :class=' key  | ClassCard '
-                     v-if="num===1" :key='key'>{{ key  | formatCard }}</div>
-                </div>
-            </li>
-        </ul>
+        <Scroller>
+            <ul>
+                <li v-for="item in cinemaList" :key="item.id">
+                    <div>
+                        <span>{{ item.nm }}</span>
+                        <span class="q"><span class="price">{{ item.sellPrice == '' ? 38 : item.sellPrice }}</span> 元起</span>
+                    </div>
+                    <div>影厅类型:{{ item.tag.hallType=='' ? '2D' : item.tag.hallType }}</div>
+                    <div class="address">
+                        <span class="cityAddr">{{ item.addr }}</span>
+                        <span>{{ item.distance }}</span>
+                    </div>
+                    <div class="card">
+                        <div v-for="(num,key) in item.tag" 
+                        :class=' key  | ClassCard '
+                        v-if="num===1" :key='key'>{{ key  | formatCard }}</div>
+                    </div>
+                </li>
+            </ul>
+        </Scroller>
     </div>
 </template>
 

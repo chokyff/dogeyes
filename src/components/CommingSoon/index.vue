@@ -1,6 +1,7 @@
 <template>
     <div class="movie_body">
-        <ul>
+        <Scroller>
+            <ul>
             <li v-for="mlist in comingList" :key="mlist.id">
                 <div class="pic_show"><img :src="mlist.img | setWH('128.180')"></div>
                 <div class="info_list">
@@ -22,6 +23,8 @@
                 </div>
             </li>
         </ul>
+        </Scroller>
+        
     </div>
 </template>
 

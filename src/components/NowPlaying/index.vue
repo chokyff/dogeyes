@@ -1,31 +1,36 @@
 <template>
-    <div class="movie_body">
-        <ul>
-            <li v-for="mlist in movieList" :key="mlist.id">
-                <div class="pic_show"><img :src="mlist.img | setWH('128.180')"></div>
-                <div class="info_list">
-                    <h2>
-                        {{ mlist.nm }}
-                        <img v-if='mlist.version' src="@/assets/maxs.png"/>
-                    </h2>
-                    <p>观众评 <span class="grade">{{ mlist.sc }}</span></p>
-                    <p>主演:{{ mlist.star }}</p>
-                    <p>今天{{ mlist.showst }}家影院放映{{ mlist.wish }}场</p>
-                </div>
-                <div class="btn_mail">
-                    购票
-                </div>
-            </li>
-        </ul>
+    <div class="movie_body" ref="movie_body">
+        <Scroller :handleToScroll='handleToScroll'  :handleToTouchEnd="handleToTouchEnd">
+            <ul>
+                <li class="pullDown">{{ this.pullDownMsg }}</li>
+                <li v-for="mlist in movieList" :key="mlist.id">
+                    <div class="pic_show" @tap="handleToDetail()"><img :src="mlist.img | setWH('128.180')"></div>
+                    <div class="info_list">
+                        <h2>
+                            {{ mlist.nm }}
+                            <img v-if='mlist.version' src="@/assets/maxs.png"/>
+                        </h2>
+                        <p>观众评 <span class="grade">{{ mlist.sc }}</span></p>
+                        <p>主演:{{ mlist.star }}</p>
+                        <p>今天{{ mlist.showst }}家影院放映{{ mlist.wish }}场</p>
+                    </div>
+                    <div class="btn_mail">
+                        购票
+                    </div>
+                </li>
+            </ul>
+        </Scroller>
     </div>
 </template>
 
 <script>
+import BScroll from 'better-scroll';
 export default {
     name: 'NowPlaying',
     data() {
         return {
-            movieList: []
+            movieList: [],
+            pullDownMsg: '',
         }
     },
     mounted() {
@@ -33,9 +38,58 @@ export default {
             let msg = res.data.msg;
             if(msg === 'ok'){
                 this.movieList = res.data.data.movieList;
-                console.log(this.movieList);
+                // this.$nextTick(() => {
+                //     let scroll = new BScroll(this.$refs.movie_body , {
+                //         tap: true,
+                //         probeType: 1
+                //     });  //保证页面渲染完毕之后才触发回调函数
+
+                //     scroll.on("scroll",(pos)=> {
+                //         if(pos.y > 30){
+                //             this.pullDownMsg  = '正在加载中'
+                //         }
+                //     })
+                //     scroll.on("touchEnd",(pos)=> {
+                //         if(pos.y > 30){
+                //             this.axios.get('/api/movieOnInfoList?cityId=11').then((res) => {
+                //                 let msg = res.data.msg;
+                //                 if(msg === 'ok'){
+                //                     this.pullDownMsg  = '加载成功'
+                //                     setTimeout(() => {
+                //                         this.movieList = res.data.data.movieList;
+                //                         this.pullDownMsg  = ''
+                //                     },1000)
+                //                 }
+                //             })
+                //         }
+                //     })
+                // })
             }
         });
+    },
+    methods: {
+        handleToDetail() {
+            console.log("gg")
+        },
+        handleToScroll(pos){
+            if(pos.y > 30){
+                this.pullDownMsg  = '正在加载中'
+            }
+        },
+        handleToTouchEnd(pos){
+            if(pos.y > 30){
+                this.axios.get('/api/movieOnInfoList?cityId=11').then((res) => {
+                    let msg = res.data.msg;
+                    if(msg === 'ok'){
+                        this.pullDownMsg  = '加载成功'
+                        setTimeout(() => {
+                            this.movieList = res.data.data.movieList;
+                            this.pullDownMsg  = ''
+                        },1000)
+                    }
+                })
+            }
+        }
     }
 }
 </script>
@@ -53,4 +107,5 @@ export default {
 .movie_body .info_list img{ width:50px; position: absolute; right:10px; top: 5px;}
 .movie_body .btn_mail , .movie_body .btn_pre{ width:47px; height:27px; line-height: 28px; text-align: center; background-color: #f03d37; color: #fff; border-radius: 4px; font-size: 12px; cursor: pointer;}
 .movie_body .btn_pre{ background-color: #3c9fe6;}
+.movie_body .pullDown{margin:0;padding:0;border:0;justify-content: center;}
 </style>
