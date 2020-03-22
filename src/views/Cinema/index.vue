@@ -13,7 +13,7 @@
                         特色 <i class="iconfont icon-lower-triangle"></i>
                     </div>
                 </div>
-
+               
                 <CinemaList />
             </div>
         <Footer />
@@ -29,7 +29,7 @@ export default {
     components: {
         Header,
         Footer,
-        CinemaList
+        CinemaList,
     }
 }
 </script>

@@ -1,6 +1,7 @@
 <template>
     <div class="movie_body" ref="movie_body">
-        <Scroller :handleToScroll='handleToScroll'  :handleToTouchEnd="handleToTouchEnd">
+        <Loading v-if="isLoading"/>
+        <Scroller v-else  :handleToScroll='handleToScroll'  :handleToTouchEnd="handleToTouchEnd">
             <ul>
                 <li class="pullDown">{{ this.pullDownMsg }}</li>
                 <li v-for="mlist in movieList" :key="mlist.id">
@@ -31,13 +32,19 @@ export default {
         return {
             movieList: [],
             pullDownMsg: '',
+            isLoading: true,
+            prevCityId: -1
         }
     },
-    mounted() {
-        this.axios.get('/api/movieOnInfoList?cityId=10').then((res) => {
+    activated() {
+        let curCityId = window.localStorage.getItem('nowId')
+        if(this.prevCityId === curCityId) return;
+        this.axios.get('/api/movieOnInfoList?cityId='+curCityId).then((res) => {
             let msg = res.data.msg;
             if(msg === 'ok'){
                 this.movieList = res.data.data.movieList;
+                this.isLoading = false;
+                this.prevCityId = curCityId;    
                 // this.$nextTick(() => {
                 //     let scroll = new BScroll(this.$refs.movie_body , {
                 //         tap: true,
@@ -78,7 +85,8 @@ export default {
         },
         handleToTouchEnd(pos){
             if(pos.y > 30){
-                this.axios.get('/api/movieOnInfoList?cityId=11').then((res) => {
+                let curCityId = window.localStorage.getItem('nowId')
+                this.axios.get('/api/movieOnInfoList?cityId='+curCityId).then((res) => {
                     let msg = res.data.msg;
                     if(msg === 'ok'){
                         this.pullDownMsg  = '加载成功'

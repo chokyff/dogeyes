@@ -6,7 +6,8 @@
                 <input type="text" v-model="message">
             </div>					
         </div>
-        <div class="search_result">
+        <Loading v-if="isLoading"/>
+        <div v-if="!isLoading" class="search_result">
             <h3>电影/电视剧/综艺</h3>
             <ul>
                 <li v-for="item in movieList" :key="item.id">
@@ -20,7 +21,7 @@
                 </li>
             </ul>
         </div>
-        <div class="search_result">
+        <div v-if="!isLoading" class="search_result">
             <h3>影院</h3>
             <ul>
                 <li v-for="item in cinemaList" :key="item.id">
@@ -36,6 +37,8 @@
                 </li>
             </ul>
         </div>
+
+        <div v-show="noData" class="nodata">无搜索结果！</div>
     </div>
 </template>
 
@@ -46,7 +49,9 @@ export default {
         return{
             message: '',
             movieList: [],
-            cinemaList: []
+            cinemaList: [],
+            isLoading: false,
+            noData: false
         }
     },
     methods: {
@@ -58,24 +63,31 @@ export default {
     },
     watch: {
         message(newVal){
+            let curCityId = window.localStorage.getItem("nowId");
+            this.isLoading = true;
+            this.noData = false;
             // clearTimeout;
             // setTimeout()   防止快速输入 请求多次
             var that = this;
             this.cancelRequest();
 
-            this.axios.get('/api/searchList?cityId=10&kw='+newVal,{
+            this.axios.get('/api/searchList?cityId='+curCityId+'&kw='+newVal,{
                 cancelToken: new this.axios.CancelToken(function executor(c) {
                     that.source = c;
                 })
             }).then((res) => {
                 let msg = res.data.msg;
                 let movie = res.data.data.movies; 
-                if(msg === "ok" && movie){
+                let cinemas = res.data.data.cinemas; 
+                this.isLoading = false;
+                if(msg === "ok" && movies){
                     this.movieList = res.data.data.movies.list;
-                    this.cinemaList = res.data.data.cinemas.list
+                    this.cinemaList = res.data.data.cinemas.list;
+                }else{
+                    this.noData = true;
                 }
             }).catch((err) => {
-                if (axios.isCancel(err)) {
+                if (this.axios.isCancel(err)) {
                     console.log('Rquest canceled', err.message); //请求如果被取消，这里是返回取消的message
                 } else {
                     //handle error
@@ -100,7 +112,8 @@ export default {
 .search_body .search_result .img{ width: 60px; float:left; }
 .search_body .search_result .img img{ width: 100%; }
 .search_body .search_result .info{ float:left; margin-left: 15px; flex:1;}
-.search_body .search_result .info p{ display: flex; line-height: 22px; font-size: 12px;}
-.search_body .search_result .info p:nth-of-type(1) span:nth-of-type(1){ font-size: 18px; flex:1; }
+.search_body .search_result .info p{ display: flex; flex-wrap: wrap;line-height: 22px; font-size: 12px;}
+.search_body .search_result .info p:nth-of-type(1) span:nth-of-type(1){ font-size: 18px; flex:1; min-width: 138px;}
 .search_body .search_result .info p:nth-of-type(1) span:nth-of-type(2){ font-size: 16px; color:#fc7103;}
+.search_body .nodata{padding:20px;text-align:center;}
 </style>

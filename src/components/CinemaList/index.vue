@@ -1,6 +1,7 @@
 <template>
     <div class="cinema_body">
-        <Scroller>
+        <Loading v-if="isLoading"/>
+        <Scroller v-else>
             <ul>
                 <li v-for="item in cinemaList" :key="item.id">
                     <div>
@@ -15,7 +16,7 @@
                     <div class="card">
                         <div v-for="(num,key) in item.tag" 
                         :class=' key  | ClassCard '
-                        v-if="num===1" :key='key'>{{ key  | formatCard }}</div>
+                        v-if="num === 1" :key='key'>{{ key  | formatCard }}</div>
                     </div>
                 </li>
             </ul>
@@ -28,14 +29,20 @@ export default {
     name: 'CinemaList',
     data() {
         return {
-            cinemaList: []
+            cinemaList: [],
+            isLoading: true,
+            prevCityId: -1
         }
     },
-    mounted() {
-        this.axios.get('/api/cinemaList?cityId=10').then((res) =>{
+    activated() {
+        let curCityId = window.localStorage.getItem('nowId');
+        if(this.prevCityId === curCityId) return
+        this.axios.get('/api/cinemaList?cityId='+curCityId).then((res) =>{
             let msg = res.data.msg;
             if(msg === 'ok'){
                 this.cinemaList = res.data.data.cinemas;
+                this.isLoading = false;
+                this.prevCityId = curCityId
             }
         })
     },

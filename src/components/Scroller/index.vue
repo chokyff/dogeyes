@@ -26,7 +26,8 @@ export default {
     mounted() {
         let scroll = new BScroll(this.$refs.wrapper , {
             tap: true,
-            probeType: 1
+            probeType: 1,
+            bounce: true
         });
 
         this.scroll = scroll;
