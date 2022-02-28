@@ -1,5 +1,5 @@
 # dogeyes
-
+目前主要功能还在dev分支
 ## Project setup
 ```
 npm install
